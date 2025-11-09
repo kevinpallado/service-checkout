@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use App\Events\CheckoutCreated;
 use App\Models\ShoppingCart;
 use App\Models\ShoppingCartItems;
+use App\Jobs\OrderCreated;
 
 class ShoppingController extends Controller
 {
@@ -40,7 +40,7 @@ class ShoppingController extends Controller
             $cart->save();
         }
 
-        Redis::publish('test-channel', json_encode($shopping->load('items')));
+        OrderCreated::dispatch(json_encode($shopping->load('items')));
 
         return response()->json(['message' => 'Successful']);
     }
